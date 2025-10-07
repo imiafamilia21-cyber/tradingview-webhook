@@ -23,6 +23,7 @@ def send_telegram(message):
 # 🚀 Flask-приложение
 app = Flask(__name__)
 
+# 📡 Маршрут для TradingView
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
@@ -41,5 +42,25 @@ def webhook():
     # 📲 Отправляем в Telegram
     send_telegram(message)
 
-    # ✅ Возвращаем ответ TradingView
     return jsonify({"status": "received", "message": message}), 200
+
+# 🧠 Маршрут для Copilot-сигналов
+@app.route('/copilot', methods=['POST'])
+def copilot_signal():
+    data = request.get_json()
+    message = data.get("message", "📢 Сигнал от Копи!")
+    print("🤖 Сигнал от Copilot:", message)
+
+    # 📲 Отправляем в Telegram
+    send_telegram(message)
+
+    return jsonify({"status": "sent", "message": message}), 200
+
+# 🧪 Тестовая страница
+@app.route('/', methods=['GET'])
+def home():
+    return "🚀 XRPBot Webhook is running!"
+
+# 🔧 Запуск локально (Render сам запускает)
+if __name__ == "__main__":
+    app.run(debug=True)
