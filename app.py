@@ -25,33 +25,3 @@ def send_telegram(message):
     except Exception as e:
         print("❌ Ошибка Telegram:", e)
         traceback.print_exc()
-
-app = Flask(__name__)
-
-@app.route('/copilot', methods=['POST'])
-def copilot_signal():
-    try:
-        data = request.get_json(force=True)
-        print("📥 Получен JSON:", data)
-        message = data.get("message", "📢 Сигнал от Копи!")
-        print("🤖 Сигнал от Copilot:", message)
-        send_telegram(message)
-        return jsonify({"status": "sent", "message": message}), 200
-    except Exception as e:
-        print("❌ Ошибка в copilot_signal:", e)
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/test', methods=['GET'])
-def test_telegram():
-    test_message = "🧪 Тестовое сообщение от /test"
-    print("🚦 Тестовая отправка:", test_message)
-    send_telegram(test_message)
-    return "✅ Тестовое сообщение отправлено", 200
-
-@app.route('/', methods=['GET'])
-def home():
-    return "🚀 XRPBot Webhook is running at /copilot"
-
-if __name__ == "__main__":
-    app.run(debug=True)
