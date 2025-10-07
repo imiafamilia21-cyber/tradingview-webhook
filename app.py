@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import requests
 
 app = Flask(__name__)
@@ -7,7 +7,7 @@ app = Flask(__name__)
 BOT_TOKEN = "8382189772:AAFlSgb8hr75EF1Ry6Q8_iFmK5ZvbSUqjFU"
 TELEGRAM_CHAT_ID = "1913932382"
 
-# 📤 Функция отправки сообщения в Telegram
+# 📤 Отправка сообщения в Telegram
 def send_telegram_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
@@ -18,10 +18,11 @@ def send_telegram_message(text):
     response = requests.post(url, data=payload)
     if response.status_code != 200:
         print(f"❌ Ошибка отправки: {response.text}")
-    else:
-        print("✅ Сообщение успешно отправлено.")
+        return False
+    print("✅ Сообщение отправлено.")
+    return True
 
-# 📡 Маршрут для приёма сигналов
+# 📡 Приём сигнала через POST-запрос
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
@@ -30,18 +31,22 @@ def webhook():
     price = data.get('price')
 
     if not symbol or not direction or not price:
-        return {"error": "Missing required fields"}, 400
+        return jsonify({"error": "Missing required fields"}), 400
 
     message = f"*Signal Received*\nSymbol: `{symbol}`\nDirection: *{direction}*\nPrice: `{price}`"
-    send_telegram_message(message)
+    success = send_telegram_message(message)
 
-    return {"status": "ok"}
+    return jsonify({"status": "ok" if success else "failed"})
 
-# 🧪 Маршрут для ручного теста
+# 🧪 Тест через браузер
 @app.route('/test/<message>', methods=['GET'])
 def test_message(message):
-    send_telegram_message(f"Тестовое сообщение: {message}")
-    return {"status": "sent", "message": message}
+    print(f"🔔 Получен тестовый запрос: {message}")
+    success = send_telegram_message(f"Тестовое сообщение: {message}")
+    return jsonify({
+        "status": "sent" if success else "failed",
+        "message": message
+    })
 
 # 🚀 Запуск локально
 if __name__ == '__main__':
