@@ -3,6 +3,7 @@ import requests
 
 app = Flask(__name__)
 
+# 🔐 Укажи свои реальные значения
 TOKEN = "твой_токен_бота"
 CHAT_ID = "твой_chat_id"
 
@@ -13,8 +14,10 @@ def send_telegram_message(text):
         "text": text
     }
     response = requests.post(url, json=payload)
+    print("Telegram response:", response.text)  # 🔍 Для отладки
     return response.status_code == 200
 
+# ✅ Маршрут для ручной проверки через браузер
 @app.route('/test/<message>', methods=['GET'])
 def test_message(message):
     success = send_telegram_message(f"Тестовое сообщение: {message}")
@@ -23,6 +26,7 @@ def test_message(message):
         "message": message
     })
 
+# ✅ Маршрут для автоматической отправки по POST
 @app.route('/copilot', methods=['POST'])
 def copilot_message():
     data = request.get_json()
