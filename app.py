@@ -3,7 +3,7 @@ import requests
 
 # 🔐 Telegram настройки
 TELEGRAM_TOKEN = "8382189772:AAFlSgb8hr75EF1Ry6Q8_iFmK5ZvbSUqjFU"
-TELEGRAM_CHAT_ID = "1913932382"
+TELEGRAM_CHAT_ID = "1913932382"  # ← твой chat.id
 
 # 📲 Функция отправки сообщения в Telegram
 def send_telegram(message):
@@ -29,7 +29,6 @@ def webhook():
     data = request.json
     print("📡 Получен сигнал:", data)
 
-    # 🧠 Формируем сообщение
     message = f"""
 📡 Сигнал: {data.get('asset')} — {data.get('direction')}
 🧠 Стратегия: {data.get('strategy')}
@@ -39,27 +38,23 @@ def webhook():
 ⏱️ Время: {data.get('timestamp')}
     """
 
-    # 📲 Отправляем в Telegram
     send_telegram(message)
-
     return jsonify({"status": "received", "message": message}), 200
 
-# 🧠 Маршрут для Copilot-сигналов
+# 🤖 Маршрут для Copilot
 @app.route('/copilot', methods=['POST'])
 def copilot_signal():
     data = request.get_json()
     message = data.get("message", "📢 Сигнал от Копи!")
     print("🤖 Сигнал от Copilot:", message)
 
-    # 📲 Отправляем в Telegram
     send_telegram(message)
-
     return jsonify({"status": "sent", "message": message}), 200
 
 # 🧪 Тестовая страница
 @app.route('/', methods=['GET'])
 def home():
-    return "🚀 XRPBot Webhook is running!"
+    return "🚀 XRPBot Webhook is running at https://tradingview-webhook-0tlh.onrender.com/copilot"
 
 # 🔧 Запуск локально (Render сам запускает)
 if __name__ == "__main__":
