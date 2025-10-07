@@ -28,25 +28,3 @@ app = Flask(__name__)
 
 # 🔔 Основной маршрут для Copilot
 @app.route('/copilot', methods=['POST'])
-def copilot_signal():
-    data = request.get_json()
-    message = data.get("message", "📢 Сигнал от Копи!")
-    print("🤖 Сигнал от Copilot:", message)
-    send_telegram(message)
-    return jsonify({"status": "sent", "message": message}), 200
-
-# 🧪 Тестовый маршрут для ручной проверки
-@app.route('/test', methods=['GET'])
-def test_telegram():
-    test_message = "🧪 Тестовое сообщение от /test"
-    print("🚦 Тестовая отправка:", test_message)
-    send_telegram(test_message)
-    return "✅ Тестовое сообщение отправлено", 200
-
-# 🌐 Домашняя страница
-@app.route('/', methods=['GET'])
-def home():
-    return "🚀 XRPBot Webhook is running at /copilot"
-
-if __name__ == "__main__":
-    app.run(debug=True)
